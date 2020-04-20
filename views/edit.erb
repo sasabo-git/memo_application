@@ -1,0 +1,15 @@
+<h1>メモの編集</h1>
+<form method="post" action="/edit/<%= @contents[:id] %>">
+  <p>メモのタイトル
+    <br>
+    <input type="text" name="title" value="<%= @contents[:title] %>">
+  </p>
+  <p>メモの詳細
+    <br>
+    <textarea name="body" rows="4" cols="40"><%= @contents[:body] %></textarea>
+  </p>
+  <p>
+    <input type="hidden" name="_method" value="PATCH">
+    <input type="submit" value="変更">
+  </p>
+</form>

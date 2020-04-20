@@ -1,0 +1,16 @@
+<h1>メモの詳細</h1>
+<p>
+  <%= @contents[:title] %>
+</p>
+<p>
+  <%= @contents[:body] %>
+</p>
+<p>
+  <button type="button"onclick="location.href='/edit/<%= @contents[:id] %>'">変更 </button>
+</p>
+<form method="post" action="/show/<%= @contents[:id] %>">
+  <p>
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="削除">
+  </p>
+</form>
