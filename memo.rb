@@ -44,6 +44,9 @@ class Memo
   end
 
   def write_data
-    File.open(@file_name, "w") { |file| JSON.dump(@contents, file) }
+    File.open(@file_name, "w") do |file|
+      JSON.dump(@contents, file)
+      file.write("\n")
+    end
   end
 end
