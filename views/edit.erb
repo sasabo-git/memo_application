@@ -1,5 +1,5 @@
 <h1>メモの編集</h1>
-<form method="post" action="/edit/<%= @contents[:id] %>">
+<form method="post" action="/memos/<%= @contents[:id] %>/edit">
   <p>メモのタイトル
     <br>
     <input type="text" name="title" value="<%= @contents[:title] %>">

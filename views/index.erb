@@ -2,12 +2,12 @@
 <ul>
   <% @titles.each do |id, title| %>
     <li data-id= "<%= id %>">
-      <a href="/show/<%= id %>">
+      <a href="/memos/<%= id %>">
         <%= title %>  
       </a>
     </li>
   <% end %>
 </ul>
 <p>
-  <button type="button"onclick="location.href='/create'">新規メモ作成</button>
+  <button type="button"onclick="location.href='/memos/new'">新規メモ作成</button>
 </p>
