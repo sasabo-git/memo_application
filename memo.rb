@@ -1,52 +1,38 @@
 # frozen_string_literal: true
 
-require "securerandom"
+require "pg"
 
 class Memo
-  def initialize(file_name, contents)
-    @file_name = file_name
-    @contents = contents ? contents : {}
-  end
-
-  def create(title, body)
-    id = SecureRandom.uuid
-    @contents["data#{id}".to_sym] = { id: id, title: title, body: body }
-    write_data
-  end
-
-  def detail(id)
-    @contents["data#{id}".to_sym]
+  def initialize(connections)
+    @connections = connections
   end
 
   def title
-    memos = @contents.select { |k, v| k =~ /data/ }
+    memos = @connections.exec("SELECT * FROM memos")
     result = {}
-    memos.each_key { |k| result[memos[k][:id]] = memos[k][:title] }
+    memos.each { |memo| result[memo["id"]] = memo["title"] }
     result
   end
 
+  def create(title, body)
+    @connections.exec("INSERT INTO memos (title, body) VALUES ('#{title}', '#{body}')")
+  end
+
+  def detail(id)
+    row = @connections.exec("SELECT * FROM memos WHERE id = '#{id}'")
+    { id: row[0]["id"], title: row[0]["title"], body: row[0]["body"] }
+  end
+
   def edit(id, new_title, new_body)
-    @contents["data#{id}".to_sym] = { id: id, title: new_title, body: new_body }
-    write_data
+    @connections.exec("UPDATE memos SET title = '#{new_title}', body = '#{new_body}' WHERE id = '#{id}'")
   end
 
   def delete(id)
-    @contents.delete("data#{id}".to_sym)
-    write_data
+    @connections.exec("DELETE FROM memos WHERE id = #{id}")
   end
 
-  def self.read_data(file_name)
-    if contents = File.open(file_name) { |file| JSON.load(file) }
-      contents.transform_keys!(&:to_sym)
-      contents.each_value { |v| v.transform_keys!(&:to_sym) if v.is_a?(Hash) }
-    end
-    Memo.new(file_name, contents)
-  end
-
-  def write_data
-    File.open(@file_name, "w") do |file|
-      JSON.dump(@contents, file)
-      file.write("\n")
-    end
+  def self.connect(db_name)
+    connections = PG.connect(host: "localhost", dbname: db_name)
+    Memo.new(connections)
   end
 end
