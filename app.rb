@@ -2,10 +2,10 @@
 
 require "sinatra"
 require "sinatra/reloader"
-require "json"
 require_relative "memo"
 
-JSON_FILE = "memo.json"
+DATA_BASE = "memo_application"
+memos = Memo.connect(DATA_BASE)
 
 get "/" do
   redirect "/memos"
@@ -13,7 +13,7 @@ end
 
 get "/memos" do
   @page = "memos"
-  @titles = Memo.read_data(JSON_FILE).title
+  @titles = memos.title
   erb :index
 end
 
@@ -23,28 +23,28 @@ get "/memos/new" do
 end
 
 post "/memos/new" do
-  Memo.read_data(JSON_FILE).create(params[:title], params[:body])
+  memos.create(params[:title], params[:body])
   redirect "/memos"
 end
 
 get "/memos/*/edit" do |id|
   @title = "Edit Memo"
-  @contents = Memo.read_data(JSON_FILE).detail(id)
+  @contents = memos.detail(id)
   erb :edit
 end
 
 patch "/memos/*/edit" do |id|
-  Memo.read_data(JSON_FILE).edit(id, params[:title], params[:body])
+  memos.edit(id, params[:title], params[:body])
   redirect "/memos"
 end
 
 get "/memos/*" do |id|
   @page = "Memo details"
-  @contents = Memo.read_data(JSON_FILE).detail(id)
+  @contents = memos.detail(id)
   erb :details
 end
 
 delete "/memos/*" do |id|
-  Memo.read_data(JSON_FILE).delete(id)
+  memos.delete(id)
   redirect "/memos"
 end
